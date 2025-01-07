@@ -1,0 +1,16 @@
+[coursework]
+admins = ["ian"]
+submission = "/tmp/{student}/{course}/{assignment}"
+collection = "/tmp/{instructor}/{course}/{assignment}"
+
+[courses.cs141]
+instructors = ["ian"]
+students = ["ian"]
+assignments = ["assignment1"]
+
+
+[assignments.assignment1]
+description = "My first assignment"
+due_date = "2025-01-06 14:00"
+total_points = 15
+test = "cmd:./test_script.sh" # "py:my_assignment"
