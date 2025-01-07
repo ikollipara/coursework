@@ -4,7 +4,7 @@ submission = "/tmp/{student}/{course}/{assignment}"
 collection = "/tmp/{instructor}/{course}/{assignment}"
 
 [courses.cs141]
-instructors = ["ian"]
+instructors = []
 students = ["ian"]
 assignments = ["assignment1"]
 

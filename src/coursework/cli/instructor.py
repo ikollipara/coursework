@@ -6,6 +6,7 @@ Ian Kollipara <ian.kollipara@cune.edu>
 Instructor Commands
 """
 
+import os
 from io import BytesIO
 from pathlib import Path
 
@@ -74,3 +75,17 @@ def report_assignment(
             report.make(result, [file for file in submission_path.glob("*") if ".runner-ouput" not in str(file)])
         )
         console.print(f"[bold green]Report generated for {student}![/]")
+
+
+@cli.command("edit")
+@click.pass_obj
+def edit(ctx: ContextObj):
+    """Edit the COURSEWORK_CONFIG."""
+
+    console = ctx["console"]
+
+    filename = os.getenv("COURSEWORK_CONFIG")
+
+    click.edit(filename=filename)
+
+    console.print("[bold green]Edits saved![/]")
