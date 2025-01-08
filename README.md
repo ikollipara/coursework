@@ -66,10 +66,7 @@ uv build
 scp dist/coursework-0.0.1-py3-none-any.whl ian.kollipara@csa2.cune.edu:~/coursework-0.0.1-py3-none-any.whl
 
 # On CSA
-pip install coursework-0.0.1-py3-none-any.whl --break-system-packages --force-reinstall
-sudo mv ~/.local/bin/coursework /usr/local/bin
-sudo mv ~/.local/bin/coursework-admin /usr/local/bin
-sudo mv ~/.local/bin/coursework-score /usr/local/bin
+sudo pip install coursework-0.0.1-py3-none-any.whl --break-system-packages --force-reinstall
 sudo chown root:root /usr/local/bin/coursework
 sudo chown root:root /usr/local/bin/coursework-admin
 sudo chown root:root /usr/local/bin/coursework-score

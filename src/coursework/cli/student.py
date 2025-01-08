@@ -8,11 +8,14 @@ Student Cli commands
 
 from io import BufferedReader
 from pathlib import Path
-from shutil import chown, copy2, rmtree
+from shutil import chown
+from shutil import copy2
+from shutil import rmtree
 
 import click
 from rich.columns import Columns
-from rich.console import Console, Group
+from rich.console import Console
+from rich.console import Group
 from rich.markdown import Markdown
 from rich.panel import Panel
 from rich.progress import track
@@ -20,8 +23,10 @@ from rich.prompt import Prompt
 from rich.rule import Rule
 from rich.table import Table
 
-from coursework.cli import ContextObj, converters
-from coursework.loaders import Configuration, User
+from coursework.cli import ContextObj
+from coursework.cli import converters
+from coursework.loaders import Configuration
+from coursework.loaders import User
 from coursework.runner import get_runner_by_name
 
 # https://click.palletsprojects.com/en/stable/arguments/#multiple-arguments
@@ -79,7 +84,7 @@ def list_assigments(ctx: ContextObj):
 @click.argument("ASSIGNMENT", type=converters.AssignmentParamType())
 @click.pass_obj
 def detail(ctx: ContextObj, course: Configuration.Course, assignment: Configuration.Assignment):
-    """Proivde extra details about a particular ASSIGNMENT in a given COURSE."""
+    """Provide extra details about a particular ASSIGNMENT in a given COURSE."""
 
     column = Columns(
         ["[bold]Due Date:[/]", assignment.due_date.strftime("%Y-%m-%d %I:%M %p")],
