@@ -1,5 +1,6 @@
 [coursework]
 admins = ["ian"]
+admin_group = "ian"
 submission = "/tmp/{student}/{course}/{assignment}"
 collection = "/tmp/{instructor}/{course}/{assignment}"
 

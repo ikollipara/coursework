@@ -12,7 +12,8 @@ from pathlib import Path
 from tempfile import mktemp
 from unittest import TestCase
 
-from coursework import loaders, models
+from coursework import loaders
+from coursework import models
 
 
 class TestTestCaseResult(TestCase):

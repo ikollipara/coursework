@@ -15,7 +15,8 @@ dependencies = [
 ]
 
 [project.scripts]
-coursework = "coursework.cli:main"
+coursework = "coursework.cli.student:cli"
+coursework-admin = "coursework.cli.instructor:cli"
 coursework-score = "coursework.score:main"
 
 [build-system]
@@ -27,6 +28,9 @@ dev = [
     "coverage>=7.6.10",
     "ruff>=0.8.5",
 ]
+
+[tool.coverage.run]
+source = ["./src"]
 
 [tool.coverage.report]
 exclude_lines = [

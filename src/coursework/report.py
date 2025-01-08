@@ -9,7 +9,8 @@ Creating a report of the code.
 from io import BytesIO
 from itertools import chain
 from pathlib import Path
-from typing import BinaryIO, Iterable
+from typing import BinaryIO
+from typing import Iterable
 
 from pygments import highlight
 from pygments.formatters import ImageFormatter
@@ -18,19 +19,19 @@ from pygments.styles import get_style_by_name
 from pygments.util import ClassNotFound
 from reportlab.lib import enums
 from reportlab.lib.pagesizes import LETTER
-from reportlab.lib.styles import ListStyle, ParagraphStyle, StyleSheet1
+from reportlab.lib.styles import ListStyle
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.lib.styles import StyleSheet1
 from reportlab.lib.units import inch
-from reportlab.platypus import (
-    Flowable,
-    Image,
-    ListFlowable,
-    ListItem,
-    PageBreak,
-    Paragraph,
-    Preformatted,
-    SimpleDocTemplate,
-    Spacer,
-)
+from reportlab.platypus import Flowable
+from reportlab.platypus import Image
+from reportlab.platypus import ListFlowable
+from reportlab.platypus import ListItem
+from reportlab.platypus import PageBreak
+from reportlab.platypus import Paragraph
+from reportlab.platypus import Preformatted
+from reportlab.platypus import SimpleDocTemplate
+from reportlab.platypus import Spacer
 
 from coursework.models import RunnerResult
 

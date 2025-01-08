@@ -8,7 +8,8 @@ Click Type Converters
 
 from click import ParamType
 
-from coursework.loaders import Configuration, User
+from coursework.loaders import Configuration
+from coursework.loaders import User
 
 
 class AssignmentParamType(ParamType):

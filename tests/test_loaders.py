@@ -18,6 +18,7 @@ class TestConfiguration(TestCase):
             [
                 "[coursework]",
                 'admins = ["ian"]',
+                'admin_group = "ian"',
                 'submission = "/tmp/{student}/{course}/{assignment}"',
                 'collection = "/tmp/{instructor}/{course}/{assignment}"',
                 "",
@@ -38,6 +39,7 @@ class TestConfiguration(TestCase):
             [
                 "[coursework]",
                 'admins = ["ian"]',
+                'admin_group = "ian"',
                 'submission = "/tmp/{student}/{course}/{assignment}"',
                 'collection = "/tmp/{instructor}/{course}/{assignment}"',
                 "",
@@ -58,6 +60,7 @@ class TestConfiguration(TestCase):
             [
                 "[coursework]",
                 'admins = ["ian"]',
+                'admin_group = "ian"',
                 'submission = "/tmp/{student}/{course}/{assignment}"',
                 'collection = "/tmp/{instructor}/{course}/{assignment}"',
                 "",
@@ -78,6 +81,7 @@ class TestConfiguration(TestCase):
             [
                 "[coursework]",
                 'admins = ["ian"]',
+                'admin_group = "ian"',
                 'submission = "/tmp/{student}/{course}/{assignment}"',
                 'collection = "/tmp/{instructor}/{course}/{assignment}"',
             ]
@@ -121,6 +125,7 @@ class TestUser(TestCase):
             [
                 "[coursework]",
                 'admins = ["ian"]',
+                'admin_group = "ian"',
                 'submission = "/tmp/{student}/{course}/{assignment}"',
                 'collection = "/tmp/{instructor}/{course}/{assignment}"',
                 "",

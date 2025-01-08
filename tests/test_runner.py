@@ -7,7 +7,9 @@ Test coursework.runner
 """
 
 from datetime import datetime
-from os import close, devnull, write
+from os import close
+from os import devnull
+from os import write
 from pathlib import Path
 from tempfile import mkstemp
 from unittest import TestCase
@@ -15,7 +17,9 @@ from unittest import TestCase
 from rich.console import Console
 
 from coursework import runner
-from coursework.loaders import Configuration, TestSpec, User
+from coursework.loaders import Configuration
+from coursework.loaders import TestSpec
+from coursework.loaders import User
 
 
 class TestPythonUnittestRunner(TestCase):

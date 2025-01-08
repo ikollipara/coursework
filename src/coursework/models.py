@@ -6,13 +6,19 @@ Ian Kollipara <ian.kollipara@cune.edu>
 Data Models
 """
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+from dataclasses import field
 from datetime import datetime
 from pathlib import Path
-from pickle import dump, load, loads
-from typing import BinaryIO, Self, overload
+from pickle import dump
+from pickle import load
+from pickle import loads
+from typing import BinaryIO
+from typing import Self
+from typing import overload
 
-from coursework.loaders import Configuration, User
+from coursework.loaders import Configuration
+from coursework.loaders import User
 
 
 class _CanBePickled:

@@ -8,12 +8,23 @@ Load Contextual Data
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from contextlib import contextmanager
+from dataclasses import dataclass
+from dataclasses import field
 from datetime import datetime
 from getpass import getuser
+from grp import getgrnam
+from grp import struct_group
+from os import geteuid
+from os import getuid
+from os import seteuid
 from tomllib import load
-from typing import BinaryIO, Literal, NamedTuple
+from typing import BinaryIO
+from typing import Literal
+from typing import NamedTuple
 from warnings import warn
+
+from click import ClickException
 
 # Runner defines the current possible
 # runners. Currently Python Unittests
@@ -26,7 +37,7 @@ class TestSpec(NamedTuple):
     filename: str
 
 
-class ImproperlyConfigured(Exception):
+class ImproperlyConfigured(ClickException):
     """Represents an improper configuration, leading to a parse error."""
 
 
@@ -41,6 +52,7 @@ class Configuration:
     """
 
     admins: list[str]
+    admin_group: struct_group
     submission: str
     collection: str
     courses: dict[str, Course]
@@ -85,6 +97,7 @@ class Configuration:
         parsed.setdefault("coursework", {})
         parsed.setdefault("assignments", {})
         parsed.setdefault("courses", {})
+        parsed["coursework"].setdefault("admin_group", "sysman")
         parsed["coursework"].setdefault(
             "submission",
             "/home/stu/{student}/.local/share/coursework/{course}/{assignment}",
@@ -98,12 +111,16 @@ class Configuration:
         if len(courses) == 0:
             warn("No courses defined. Consider defining courses.")
 
-        return cls(
-            admins=parsed["coursework"]["admins"],
-            submission=parsed["coursework"]["submission"],
-            collection=parsed["coursework"]["collection"],
-            courses=courses,
-        )
+        try:
+            return cls(
+                admins=parsed["coursework"]["admins"],
+                admin_group=getgrnam(parsed["coursework"]["admin_group"]),
+                submission=parsed["coursework"]["submission"],
+                collection=parsed["coursework"]["collection"],
+                courses=courses,
+            )
+        except KeyError as e:
+            raise ImproperlyConfigured(f"admin group {parsed['coursework']['admin_group']} does not exist") from e
 
     @classmethod
     def _load_assignments(cls, parsed: dict):
@@ -120,7 +137,7 @@ class Configuration:
                 )
                 for name, values in parsed["assignments"].items()
             }
-        except ValueError as e:
+        except (ValueError, KeyError) as e:
             raise ImproperlyConfigured("Error parsing due date.") from e
 
     @classmethod
@@ -159,3 +176,17 @@ class User:
     def from_env(cls, config: Configuration, *, name=None):
         name = name or getuser()
         return cls(name=name, role=("instructor" if name in config.admins else "student"))
+
+    @contextmanager
+    def as_root(self):
+        """Elevate the permissions of the user."""
+
+        real_user_id = getuid()
+        effective_user_id = geteuid()
+
+        try:
+            seteuid(real_user_id)
+            yield
+
+        finally:
+            seteuid(effective_user_id)

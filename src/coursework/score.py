@@ -43,5 +43,5 @@ def main(name: str, points: int, was_successful: bool, message: str, output: Buf
     output.write(b"SPLIT")
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     main()

@@ -6,11 +6,15 @@ Ian Kollipara <ian.kollipara@cune.edu>
 Student Cli commands
 """
 
+from io import BufferedReader
 from pathlib import Path
-from shutil import copy2, rmtree
+from shutil import chown
+from shutil import copy2
+from shutil import rmtree
 
 import click
 from rich.columns import Columns
+from rich.console import Console
 from rich.console import Group
 from rich.markdown import Markdown
 from rich.panel import Panel
@@ -19,13 +23,35 @@ from rich.prompt import Prompt
 from rich.rule import Rule
 from rich.table import Table
 
-from coursework.cli import ContextObj, RichClickException, cli, converters
+from coursework.cli import ContextObj
+from coursework.cli import converters
 from coursework.loaders import Configuration
+from coursework.loaders import User
 from coursework.runner import get_runner_by_name
 
 # https://click.palletsprojects.com/en/stable/arguments/#multiple-arguments
 # Click represents an arbitrary number of arguments as -1.
 ARBITRARY_NARGS = -1
+
+
+@click.group()
+@click.option("--config", type=click.File("br"), hidden=True, envvar="COURSEWORK_CONFIG")
+@click.pass_context
+def cli(ctx: click.Context, config: BufferedReader):
+    """
+    Coursework.
+
+    Coursework is a hand-in program for use by students at Concordia University.
+    """
+
+    ctx.ensure_object(dict)
+    console = Console(file=click.get_text_stream("stdout"))
+    configuration = Configuration.from_toml(config)
+    user = User.from_env(configuration)
+
+    ctx.obj["console"] = console
+    ctx.obj["config"] = configuration
+    ctx.obj["user"] = user
 
 
 @cli.command("list")
@@ -108,7 +134,8 @@ def submit(
         if response == "n":
             exit(1)
         else:
-            rmtree(save_path)
+            with user.as_root():
+                rmtree(save_path)
 
     runner = get_runner_by_name(assignment.test.runner)
     result = runner(user, course, assignment, files).run(console)
@@ -116,9 +143,17 @@ def submit(
     save_path.mkdir(parents=True, exist_ok=True)
     result.to_pickle(save_path / ".runner-output")
 
+    chown(save_path, user.name, config.admin_group.gr_gid)
+    chown(save_path / ".runner-output", user.name, config.admin_group.gr_gid)
+
     for file in track(files, "Saving submitted files...", total=len(files), console=console):
         # We use copy2 instead of copy since copy2 is supposed to perserve file metadata
         # https://docs.python.org/3/library/shutil.html#shutil.copy2
         copy2(file.absolute(), save_path / file.name)
+        chown(save_path / file.name, user.name, config.admin_group.gr_gid)
 
     console.print(f"[bold green]{assignment.name} was successfully submitted![/]")
+
+
+if __name__ == "__main__":  # pragma: no cover
+    cli()

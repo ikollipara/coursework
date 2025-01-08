@@ -5,3 +5,8 @@ Ian Kollipara <ian.kollipara@cune.edu>
 
 Coursework Entrypoint
 """
+
+from .cli import main
+
+if __name__ == "__main__":  # pragma: no cover
+    main()

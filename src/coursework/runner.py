@@ -9,16 +9,20 @@ Test Runners
 from __future__ import annotations
 
 import subprocess
+import sys
 from abc import ABC as AbstractBaseClass
 from abc import abstractmethod
 from contextlib import contextmanager
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+from dataclasses import field
 from datetime import datetime
-from os import chdir, environ
+from os import chdir
+from os import environ
 from pathlib import Path
 from runpy import run_path
 from shutil import copyfile
-from tempfile import NamedTemporaryFile, TemporaryDirectory
+from tempfile import NamedTemporaryFile
+from tempfile import TemporaryDirectory
 from typing import Type
 from unittest import TestResult
 
@@ -26,8 +30,10 @@ from rich.columns import Columns
 from rich.console import Console
 from rich.rule import Rule
 
-from coursework.loaders import Configuration, User
-from coursework.models import RunnerResult, TestCaseResult
+from coursework.loaders import Configuration
+from coursework.loaders import User
+from coursework.models import RunnerResult
+from coursework.models import TestCaseResult
 from coursework.testing import Assignment
 
 
@@ -106,11 +112,16 @@ class CmdRunner(Runner):
             failed = 0
             script = str(Path(self.assignment.test.filename).absolute())
             with self.testing_environment():
-                subprocess.run(
-                    [script],
+                proc = subprocess.Popen(
+                    script,
+                    shell=False,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
                     env=environ | {"COURSEWORK_RUNNER_OUTPUT": f.name},
-                    stdout=output_stream.file,
                 )
+                output = proc.stdout.read()
+                output_stream.print(output)
+                proc.wait()
 
             contents = f.read()
 
