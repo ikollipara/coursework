@@ -9,22 +9,18 @@ Load Contextual Data
 from __future__ import annotations
 
 from contextlib import contextmanager
-from dataclasses import dataclass
-from dataclasses import field
+from dataclasses import dataclass, field
 from datetime import datetime
 from getpass import getuser
-from grp import getgrnam
-from grp import struct_group
-from os import geteuid
-from os import getuid
-from os import seteuid
+from grp import getgrnam, struct_group
+from os import geteuid, getuid, seteuid
+from pathlib import Path
 from tomllib import load
-from typing import BinaryIO
-from typing import Literal
-from typing import NamedTuple
+from typing import BinaryIO, Literal, NamedTuple, overload
 from warnings import warn
 
 from click import ClickException
+from rich.console import Console
 
 # Runner defines the current possible
 # runners. Currently Python Unittests
@@ -87,6 +83,41 @@ class Configuration:
         due_date: datetime
         total_points: int
         test: TestSpec
+
+    @overload
+    @classmethod
+    def validate(cls, console: Console, fp: BinaryIO) -> bool:
+        """Validate the provided buffer is valid."""
+
+    @overload
+    @classmethod
+    def validate(cls, console: Console, fp: Path) -> bool:
+        """Validate the file at the provided path is valid."""
+
+    @overload
+    @classmethod
+    def validate(cls, console: Console, fp: str) -> bool:
+        """Validate the file at the provided path is valid."""
+
+    @classmethod
+    def validate(cls, console: Console, fp: str | Path | BinaryIO) -> bool:
+        if isinstance(fp, (str, Path)):
+            try:
+                with open(fp, "rb") as f:
+                    cls.from_toml(f)
+                return True
+            except ImproperlyConfigured as e:
+                console.print(f"[bold red]Error: {e.message}[/]")
+                console.input()
+                return False
+        elif isinstance(fp, BinaryIO):
+            try:
+                cls.from_toml(fp)
+                return True
+            except ImproperlyConfigured as e:
+                console.print(f"[bold red]Error: {e.message}[/]")
+                console.input()
+                return False
 
     @classmethod
     def from_toml(cls, fp: BinaryIO):

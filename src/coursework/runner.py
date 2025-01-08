@@ -9,7 +9,6 @@ Test Runners
 from __future__ import annotations
 
 import subprocess
-import sys
 from abc import ABC as AbstractBaseClass
 from abc import abstractmethod
 from contextlib import contextmanager

@@ -7,8 +7,7 @@ Instructor Commands
 """
 
 import os
-from io import BufferedReader
-from io import BytesIO
+from io import BufferedReader, BytesIO
 from pathlib import Path
 from shutil import chown
 
@@ -17,10 +16,8 @@ from rich.console import Console
 from rich.progress import track
 
 from coursework import report
-from coursework.cli import ContextObj
-from coursework.cli import converters
-from coursework.loaders import Configuration
-from coursework.loaders import User
+from coursework.cli import ContextObj, converters
+from coursework.loaders import Configuration, User
 from coursework.models import RunnerResult
 
 
@@ -105,6 +102,11 @@ def edit(ctx: ContextObj):
 
     filename = os.getenv("COURSEWORK_CONFIG")
     click.edit(filename=filename)
+
+    # This loop makes sure the configuration stays valid,
+    # since the entire CLI will break if this isn't the case.
+    while not Configuration.validate(console, filename):
+        click.edit(filename=filename)
 
     console.print("[bold green]Edits saved![/]")
 

@@ -8,14 +8,11 @@ Student Cli commands
 
 from io import BufferedReader
 from pathlib import Path
-from shutil import chown
-from shutil import copy2
-from shutil import rmtree
+from shutil import chown, copy2, rmtree
 
 import click
 from rich.columns import Columns
-from rich.console import Console
-from rich.console import Group
+from rich.console import Console, Group
 from rich.markdown import Markdown
 from rich.panel import Panel
 from rich.progress import track
@@ -23,10 +20,8 @@ from rich.prompt import Prompt
 from rich.rule import Rule
 from rich.table import Table
 
-from coursework.cli import ContextObj
-from coursework.cli import converters
-from coursework.loaders import Configuration
-from coursework.loaders import User
+from coursework.cli import ContextObj, converters
+from coursework.loaders import Configuration, User
 from coursework.runner import get_runner_by_name
 
 # https://click.palletsprojects.com/en/stable/arguments/#multiple-arguments
@@ -140,17 +135,18 @@ def submit(
     runner = get_runner_by_name(assignment.test.runner)
     result = runner(user, course, assignment, files).run(console)
 
-    save_path.mkdir(parents=True, exist_ok=True)
-    result.to_pickle(save_path / ".runner-output")
+    with user.as_root():
+        save_path.mkdir(parents=True, exist_ok=True)
+        result.to_pickle(save_path / ".runner-output")
 
-    chown(save_path, user.name, config.admin_group.gr_gid)
-    chown(save_path / ".runner-output", user.name, config.admin_group.gr_gid)
+        chown(save_path, user.name, config.admin_group.gr_gid)
+        chown(save_path / ".runner-output", user.name, config.admin_group.gr_gid)
 
-    for file in track(files, "Saving submitted files...", total=len(files), console=console):
-        # We use copy2 instead of copy since copy2 is supposed to perserve file metadata
-        # https://docs.python.org/3/library/shutil.html#shutil.copy2
-        copy2(file.absolute(), save_path / file.name)
-        chown(save_path / file.name, user.name, config.admin_group.gr_gid)
+        for file in track(files, "Saving submitted files...", total=len(files), console=console):
+            # We use copy2 instead of copy since copy2 is supposed to perserve file metadata
+            # https://docs.python.org/3/library/shutil.html#shutil.copy2
+            copy2(file.absolute(), save_path / file.name)
+            chown(save_path / file.name, user.name, config.admin_group.gr_gid)
 
     console.print(f"[bold green]{assignment.name} was successfully submitted![/]")
 
