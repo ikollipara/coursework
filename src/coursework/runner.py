@@ -166,7 +166,7 @@ class PythonUnittestRunner(Runner):
         earned_points = passed = failed = 0
         with self.testing_environment():
             for value in run_path(Path(self.assignment.test.filename).absolute()).values():
-                if isinstance(value, type) and issubclass(value, Assignment):
+                if isinstance(value, type) and issubclass(value, Assignment) and value in Assignment.__subclasses__():
                     assessments = value.__assessments__
 
                     output_stream.print(Rule(title=self.assignment.name))
@@ -208,10 +208,17 @@ class PythonUnittestRunner(Runner):
         return RunnerResult(self.user, datetime.now(), self.course, self.assignment, test_case_results)
 
 
-_RUNNER_MAP: dict[str, Runner] = {
-    "cmd": CmdRunner,
-    "py": PythonUnittestRunner,
-}
+class ManualRunner(Runner):
+    """A runner for manually graded assignments."""
+
+    def run(self, output_stream):
+        output_stream.print(Rule(title=self.assignment.name))
+        output_stream.print("[bold blue]This assignment is manually graded.[/]")
+
+        return RunnerResult(self.user, datetime.now(), self.course, self.assignment, [])
+
+
+_RUNNER_MAP: dict[str, Runner] = {"cmd": CmdRunner, "py": PythonUnittestRunner, "manual": ManualRunner}
 
 
 def get_runner_by_name(name: str) -> Type[Runner]:

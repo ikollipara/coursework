@@ -9,14 +9,21 @@ Load Contextual Data
 from __future__ import annotations
 
 from contextlib import contextmanager
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+from dataclasses import field
 from datetime import datetime
 from getpass import getuser
-from grp import getgrnam, struct_group
-from os import geteuid, getuid, seteuid
+from grp import getgrnam
+from grp import struct_group
+from os import geteuid
+from os import getuid
+from os import seteuid
 from pathlib import Path
 from tomllib import load
-from typing import BinaryIO, Literal, NamedTuple, overload
+from typing import BinaryIO
+from typing import Literal
+from typing import NamedTuple
+from typing import overload
 from warnings import warn
 
 from click import ClickException
@@ -25,7 +32,7 @@ from rich.console import Console
 # Runner defines the current possible
 # runners. Currently Python Unittests
 # and bash scripts are supported.
-RUNNER = Literal["cmd", "py"]
+RUNNER = Literal["cmd", "py", "manual"]
 
 
 class TestSpec(NamedTuple):

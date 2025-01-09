@@ -32,9 +32,10 @@ class TestPythonUnittestRunner(TestCase):
             test_assignment_fd,
             "\n".join(
                 [
+                    "from coursework.testing import Assignment",
                     "from coursework import testing",
                     "",
-                    "class MyAssignment(testing.Assignment):",
+                    "class MyAssignment(Assignment):",
                     "    @testing.points(15)",
                     "    def test_should_fail(self):",
                     "        self.assertEqual(1, 2)",
