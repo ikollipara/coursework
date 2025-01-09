@@ -11,9 +11,11 @@ This is used by the "py:" runner of coursework.
 
 from __future__ import annotations
 
+import functools
 import typing
 from dataclasses import dataclass
 from unittest import TestCase
+from unittest.util import three_way_cmp
 
 
 class Assignment(TestCase):
@@ -46,6 +48,7 @@ class Assignment(TestCase):
             for name in dir(cls)
             if name.startswith("test_") and callable(func := getattr(cls, name, None)) and hasattr(func, "__points__")
         ]
+        cls.__assessments__.sort(key=lambda a: functools.cmp_to_key(three_way_cmp)(a.name))
 
 
 def points(value: int):

@@ -9,6 +9,7 @@ Test Runners
 from __future__ import annotations
 
 import subprocess
+import sys
 from abc import ABC as AbstractBaseClass
 from abc import abstractmethod
 from contextlib import contextmanager
@@ -19,6 +20,7 @@ from os import chdir
 from os import environ
 from pathlib import Path
 from runpy import run_path
+from shutil import chown
 from shutil import copyfile
 from tempfile import NamedTemporaryFile
 from tempfile import TemporaryDirectory
@@ -49,6 +51,7 @@ class Runner(AbstractBaseClass):
     """
 
     user: User
+    config: Configuration
     course: Configuration.Course
     assignment: Configuration.Assignment
     files: list[Path] = field(default_factory=list)
@@ -69,19 +72,20 @@ class Runner(AbstractBaseClass):
         with TemporaryDirectory() as temp_dir:
             temp_dir = Path(temp_dir)
             try:
-                chdir(temp_dir)
+                with self.user.as_root():
+                    chdir(temp_dir)
 
-                for file in self.files:
-                    copyfile(file, temp_dir / file.name)
+                    for file in self.files:
+                        copyfile(file, temp_dir / file.name)
+                        chown(temp_dir / file.name, self.user.name, self.config.admin_group.gr_gid)
+                    sys.path.append(str(temp_dir))
 
                 yield
 
             finally:
-                chdir(current_dir)
-                for file in self.files:
-                    (temp_dir / file.name).unlink(missing_ok=True)
-
-                temp_dir.rmdir()
+                with self.user.as_root():
+                    chdir(current_dir)
+                    sys.path.remove(str(temp_dir))
 
     def display_results(self, output_stream: Console, earned_points: int, passed: int, failed: int):
         """Display a summarized results list to the console."""
@@ -164,8 +168,10 @@ class PythonUnittestRunner(Runner):
     def run(self, output_stream):
         test_case_results: list[TestCaseResult] = []
         earned_points = passed = failed = 0
-        with self.testing_environment(), self.user.as_root():
-            for value in run_path(Path(self.assignment.test.filename).absolute()).values():
+        with self.testing_environment():
+            with self.user.as_root():
+                values = run_path(Path(self.assignment.test.filename).absolute()).values()
+            for value in values:
                 if isinstance(value, type) and issubclass(value, Assignment) and value in Assignment.__subclasses__():
                     assessments = value.__assessments__
 

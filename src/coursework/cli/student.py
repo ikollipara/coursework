@@ -34,7 +34,7 @@ from coursework.runner import get_runner_by_name
 ARBITRARY_NARGS = -1
 
 
-@click.group()
+@click.group(name="coursework")
 @click.option("--config", type=click.File("br"), hidden=True, envvar="COURSEWORK_CONFIG")
 @click.pass_context
 def cli(ctx: click.Context, config: BufferedReader):
@@ -107,7 +107,7 @@ def detail(ctx: ContextObj, course: Configuration.Course, assignment: Configurat
 @click.argument(
     "FILES",
     nargs=ARBITRARY_NARGS,
-    type=click.Path(exists=True, file_okay=True, dir_okay=False, resolve_path=True, allow_dash=False, path_type=Path),
+    type=click.Path(exists=False, resolve_path=True, allow_dash=False, path_type=Path),
 )
 @click.pass_obj
 def submit(
@@ -118,27 +118,31 @@ def submit(
     console = ctx["console"]
     config = ctx["config"]
     user = ctx["user"]
+    files = [f.absolute().expanduser() for f in files]
+
+    with user.as_root():
+        files = [f for f in files if f.exists() and not f.is_dir()]
 
     save_path = Path(
         config.submission.format(student=user.name, course=course.name, assignment=assignment.name)
     ).absolute()
 
     # We do this check to avoid keeping files from a past submission.
-    if save_path.exists():
-        response = Prompt.ask(
-            "A submission already exists. Do you want to continue and overwrite your previous submission?",
-            console=console,
-            choices=["y", "n"],
-            default="n",
-        )
-        if response == "n":
-            exit(1)
-        else:
-            with user.as_root():
+    with user.as_root():
+        if save_path.exists():
+            response = Prompt.ask(
+                "A submission already exists. Do you want to continue and overwrite your previous submission?",
+                console=console,
+                choices=["y", "n"],
+                default="n",
+            )
+            if response == "n":
+                exit(1)
+            else:
                 rmtree(save_path)
 
     runner = get_runner_by_name(assignment.test.runner)
-    result = runner(user, course, assignment, files).run(console)
+    result = runner(user, config, course, assignment, files).run(console)
 
     with user.as_root():
         save_path.mkdir(parents=True, exist_ok=True)
@@ -156,5 +160,5 @@ def submit(
     console.print(f"[bold green]{assignment.name} was successfully submitted![/]")
 
 
-if __name__ == "__main__":  # pragma: no cover
-    cli()
+def main(argv=None):  # pragma: no cover
+    cli.main(prog_name="coursework", args=argv)

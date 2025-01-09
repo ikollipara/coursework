@@ -13,7 +13,7 @@ from typing import BinaryIO
 from typing import Iterable
 
 from pygments import highlight
-from pygments.formatters import ImageFormatter
+from pygments.formatters import BmpImageFormatter
 from pygments.lexers import get_lexer_for_filename
 from pygments.styles import get_style_by_name
 from pygments.util import ClassNotFound
@@ -23,6 +23,7 @@ from reportlab.lib.styles import ListStyle
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.styles import StyleSheet1
 from reportlab.lib.units import inch
+from reportlab.lib.utils import ImageReader
 from reportlab.platypus import Flowable
 from reportlab.platypus import Image
 from reportlab.platypus import ListFlowable
@@ -104,7 +105,7 @@ def make(result: RunnerResult, files: Iterable[Path] = None, out: BinaryIO = Non
         bottomMargin=inch / 2,
     )
 
-    document.build([*_title_page(result), *list(chain.from_iterable(_code_page(file) for file in files))])
+    document.build([*_title_page(result), *list(chain.from_iterable(_code_page(file, document) for file in files))])
 
     return out
 
@@ -150,7 +151,7 @@ def _student_scores(result: RunnerResult) -> list[Flowable]:
     ]
 
 
-def _code_page(file: Path) -> list[Flowable]:
+def _code_page(file: Path, doc: SimpleDocTemplate) -> list[Flowable]:
     """Create code pages."""
 
     try:
@@ -159,14 +160,13 @@ def _code_page(file: Path) -> list[Flowable]:
         highlight(
             file.read_bytes(),
             get_lexer_for_filename(file.name),
-            ImageFormatter(image_format="jpeg", style=get_style_by_name("xcode")),
+            BmpImageFormatter(style=get_style_by_name("xcode")),
             img_buffer,
         )
-        code = Image(
-            img_buffer,
-            width=6 * inch,
-            height=8.5 * inch,
-        )
+        reader = ImageReader(img_buffer)
+        iw, ih = reader.getSize()
+        aspect = ih / float(iw)
+        code = Image(img_buffer, width=inch * 4, height=(inch * 4 * aspect), hAlign="LEFT")
     except ClassNotFound:
         # Reset the file position to the start, thus making sure all text is grabbed.
         code = Preformatted(file.read_text(), styles["Code"], maxLineLength=80)

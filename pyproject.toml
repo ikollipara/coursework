@@ -15,8 +15,8 @@ dependencies = [
 ]
 
 [project.scripts]
-coursework = "coursework.cli.student:cli"
-coursework-admin = "coursework.cli.instructor:cli"
+_coursework = "coursework.cli.student:main"
+_coursework-admin = "coursework.cli.instructor:main"
 coursework-score = "coursework.score:main"
 
 [build-system]
@@ -26,6 +26,7 @@ build-backend = "hatchling.build"
 [dependency-groups]
 dev = [
     "coverage>=7.6.10",
+    "hatchling>=1.27.0",
     "ruff>=0.8.5",
 ]
 
@@ -48,3 +49,13 @@ line-length = 120
 
 [tool.ruff.lint.isort]
 force-single-line = true
+
+
+[tool.hatch.build.hooks.custom]
+path = "./hatch_build.py"
+
+[tool.hatch.build.targets.wheel]
+artifacts = [
+    "coursework",
+    "coursework-admin"
+]

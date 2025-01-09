@@ -7,7 +7,8 @@ Instructor Commands
 """
 
 import os
-from io import BufferedReader, BytesIO
+from io import BufferedReader
+from io import BytesIO
 from pathlib import Path
 from shutil import chown
 
@@ -16,12 +17,14 @@ from rich.console import Console
 from rich.progress import track
 
 from coursework import report
-from coursework.cli import ContextObj, converters
-from coursework.loaders import Configuration, User
+from coursework.cli import ContextObj
+from coursework.cli import converters
+from coursework.loaders import Configuration
+from coursework.loaders import User
 from coursework.models import RunnerResult
 
 
-@click.group()
+@click.group(name="coursework-admin")
 @click.option("--config", type=click.File("br"), hidden=True, envvar="COURSEWORK_CONFIG")
 @click.pass_context
 def cli(ctx: click.Context, config: BufferedReader):
@@ -111,5 +114,5 @@ def edit(ctx: ContextObj):
     console.print("[bold green]Edits saved![/]")
 
 
-if __name__ == "__main__":  # pragma: no cover
-    cli()
+def main(argv=None):  # pragma: no cover
+    cli.main(prog_name="coursework-admin")
