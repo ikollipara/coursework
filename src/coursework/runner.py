@@ -110,7 +110,7 @@ class CmdRunner(Runner):
             passed = 0
             failed = 0
             script = str(Path(self.assignment.test.filename).absolute())
-            with self.testing_environment():
+            with self.testing_environment(), self.user.as_root():
                 proc = subprocess.Popen(
                     script,
                     shell=False,
@@ -164,7 +164,7 @@ class PythonUnittestRunner(Runner):
     def run(self, output_stream):
         test_case_results: list[TestCaseResult] = []
         earned_points = passed = failed = 0
-        with self.testing_environment():
+        with self.testing_environment(), self.user.as_root():
             for value in run_path(Path(self.assignment.test.filename).absolute()).values():
                 if isinstance(value, type) and issubclass(value, Assignment) and value in Assignment.__subclasses__():
                     assessments = value.__assessments__
