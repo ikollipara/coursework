@@ -64,13 +64,13 @@ It consists of 3 kinds of blocks:
 # Local
 uv build
 scp dist/coursework-0.0.1-py3-none-any.whl ian.kollipara@csa2.cune.edu:~/coursework-0.0.1-py3-none-any.whl
-scp dist/coursework ian.kollipara@csa2.cune.edu:~/coursework
-scp dist/coursework-admin ian.kollipara@csa2.cune.edu:~/coursework-admin
+scp dist/coursework ian.kollipara@csa2.cune.edu:~/coursework-bin
+scp dist/coursework-admin ian.kollipara@csa2.cune.edu:~/coursework-admin-bin
 
 # On CSA
 sudo pip install coursework-0.0.1-py3-none-any.whl --break-system-packages --force-reinstall
-sudo mv ~/coursework /usr/local/bin/coursework
-sudo mv ~/coursework-admin /usr/local/bin/coursework-admin
+sudo mv ~/coursework-bin /usr/local/bin/coursework
+sudo mv ~/coursework-admin-bin /usr/local/bin/coursework-admin
 sudo chown root:root /usr/local/bin/coursework-score
 sudo chown root:root /usr/local/bin/coursework-admin
 sudo chown root:root /usr/local/bin/coursework
