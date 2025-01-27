@@ -31,6 +31,7 @@ from reportlab.platypus import ListItem
 from reportlab.platypus import PageBreak
 from reportlab.platypus import Paragraph
 from reportlab.platypus import Preformatted
+from reportlab.platypus import PythonPreformatted
 from reportlab.platypus import SimpleDocTemplate
 from reportlab.platypus import Spacer
 
@@ -42,7 +43,7 @@ styles.add(
     ParagraphStyle(
         name="Code",
         fontName="Courier",
-        fontSize=8,
+        fontSize=10,
         leading=8.8,
         firstLineIndent=0,
         leftIndent=0,
@@ -154,21 +155,9 @@ def _student_scores(result: RunnerResult) -> list[Flowable]:
 def _code_page(file: Path, doc: SimpleDocTemplate) -> list[Flowable]:
     """Create code pages."""
 
-    try:
-        # Reset the file position to the start, thus making sure all text is grabbed.
-        img_buffer = BytesIO()
-        highlight(
-            file.read_bytes(),
-            get_lexer_for_filename(file.name),
-            BmpImageFormatter(style=get_style_by_name("xcode")),
-            img_buffer,
-        )
-        reader = ImageReader(img_buffer)
-        iw, ih = reader.getSize()
-        aspect = ih / float(iw)
-        code = Image(img_buffer, width=inch * 4, height=(inch * 4 * aspect), hAlign="LEFT")
-    except ClassNotFound:
-        # Reset the file position to the start, thus making sure all text is grabbed.
+    if file.suffix == ".py":
+        code = PythonPreformatted(file.read_text(), styles["Code"])
+    else:
         code = Preformatted(file.read_text(), styles["Code"], maxLineLength=80)
 
     return [

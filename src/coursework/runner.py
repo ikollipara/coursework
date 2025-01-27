@@ -85,7 +85,8 @@ class Runner(AbstractBaseClass):
             finally:
                 with self.user.as_root():
                     chdir(current_dir)
-                    sys.path.remove(str(temp_dir))
+                    if str(temp_dir) in sys.path:
+                        sys.path.remove(str(temp_dir))
 
     def display_results(self, output_stream: Console, earned_points: int, passed: int, failed: int):
         """Display a summarized results list to the console."""

@@ -6,6 +6,7 @@ Ian Kollipara <ian.kollipara@cune.edu>
 Test coursework.runner
 """
 
+import grp
 from datetime import datetime
 from os import close
 from os import devnull
@@ -65,13 +66,22 @@ class TestPythonUnittestRunner(TestCase):
             TestSpec("py", str(test_assignment_file.absolute())),
         )
         self.course = Configuration.Course("My course", ["ian"], ["ian"], {"My assignment": self.assignment})
+        self.config = Configuration(
+            ["ian"],
+            grp.getgrnam("ian"),
+            "/tmp/{student}/{course}/{assignment}",
+            "/tmp/{instructor}/{course}/{assignment}",
+            courses=[self.course],
+        )
         self.user = User("ian", "student")
         self.devnull = Path(devnull).open("w")
         self.addCleanup(self.devnull.close)
 
     def test_run(self):
         console = Console(file=self.devnull)
-        test_runner = runner.PythonUnittestRunner(self.user, self.course, self.assignment, [self.example_file])
+        test_runner = runner.PythonUnittestRunner(
+            self.user, self.config, self.course, self.assignment, [self.example_file]
+        )
         result = test_runner.run(console)
 
         self.assertEqual(len(result.test_case_results), 3)

@@ -33,6 +33,9 @@ from coursework.runner import get_runner_by_name
 # Click represents an arbitrary number of arguments as -1.
 ARBITRARY_NARGS = -1
 
+# Root User ID for Linux
+ROOT_UID = 0
+
 
 @click.group(name="coursework")
 @click.option("--config", type=click.File("br"), hidden=True, envvar="COURSEWORK_CONFIG")
@@ -148,14 +151,14 @@ def submit(
         save_path.mkdir(parents=True, exist_ok=True)
         result.to_pickle(save_path / ".runner-output")
 
-        chown(save_path, user.name, config.admin_group.gr_gid)
-        chown(save_path / ".runner-output", user.name, config.admin_group.gr_gid)
+        # chown(save_path, ROOT_UID, config.admin_group.gr_gid)
+        # chown(save_path / ".runner-output", ROOT_UID, config.admin_group.gr_gid)
 
         for file in track(files, "Saving submitted files...", total=len(files), console=console):
             # We use copy2 instead of copy since copy2 is supposed to perserve file metadata
             # https://docs.python.org/3/library/shutil.html#shutil.copy2
             copy2(file.absolute(), save_path / file.name)
-            chown(save_path / file.name, user.name, config.admin_group.gr_gid)
+            # chown(save_path / file.name, ROOT_UID, config.admin_group.gr_gid)
 
     console.print(f"[bold green]{assignment.name} was successfully submitted![/]")
 
