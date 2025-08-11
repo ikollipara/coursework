@@ -1,0 +1,36 @@
+{% extends "base.html" %} {% block title %} | {{ course.name|upper }}{% endblock
+%} {% block content %}
+<h1 class="text-3xl font-light tracking-tight">{{ course.name|upper }}</h1>
+<p class="text-lg text-gray-700">Select an assignment to begin a submission.</p>
+<ul role="list" class="divide-y divide-gray-900/5">
+	{% for assignment in course.assignments.values() %}
+	<li
+		class="flex justify-between gap-x-6 py-5 hover:bg-gray-800 transition-all hover:text-gray-100 text-gray-800 px-2 py-3 rounded me-5 hover:cursor-pointer"
+		onclick="document.querySelector('#{{ assignment.name }}').click()"
+	>
+		<div class="flex min-w-0 gap-x-4">
+			<div class="m-w-0 flex-auto">
+				<a
+					id="{{ assignment.name }}"
+					href="{{ url_for('submission.course_assignment', course_name=course.name, assignment_name=assignment.name) }}"
+					class="text-lg/6 font-semibold"
+				>
+					{{ assignment.name }}
+				</a>
+				<p
+					class="mt-1 text-xs/6 truncate {{ 'text-red-600' if assignment.is_late() and not already_submitted(assignment) else 'text-gray-600' }}"
+				>
+					Due Date: {{ assignment.due_date.strftime('%Y-%m-%d %I:%M %p') }} {%
+					if assignment.is_late() and not already_submitted(assignment)
+					%}(Late){% endif %}
+				</p>
+
+				<p class="mt-1 text-xs/6 truncate text-gray-600">
+					{{ assignment.description }}
+				</p>
+			</div>
+		</div>
+	</li>
+	{% endfor %}
+</ul>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %} {% block title %} | {{ course.name|upper }} {{
+assignment.name }}{% endblock %} {% block content %}
+<h1 class="text-3xl font-light tracking-tight">{{ assignment.name }}</h1>
+<p
+	class="{{ 'text-red-600' if assignment.is_late() and not already_submitted else 'text-gray-600' }}"
+>
+	Due Date: {{ assignment.due_date.strftime('%Y-%m-%d %I:%M %p') }} {% if
+	assignment.is_late() and not already_submitted %}(Late){% endif %}
+</p>
+<p class="mt-2 text-gray-800 text-lg">{{ assignment.description }}</p>
+
+{% if already_submitted %}
+<div class="alert">
+	<svg
+		xmlns="http://www.w3.org/2000/svg"
+		width="24"
+		height="24"
+		viewBox="0 0 24 24"
+		fill="none"
+		stroke="currentColor"
+		stroke-width="2"
+		stroke-linecap="round"
+		stroke-linejoin="round"
+	>
+		<circle cx="12" cy="12" r="10" />
+		<path d="m9 12 2 2 4-4" />
+	</svg>
+	<h2>You have already submitted for this assignment!</h2>
+	<section>
+		If you choose to resubmit, you will lose your previous score.
+	</section>
+</div>
+{% endif %}
+<form
+	method="post"
+	action="{{ url_for('submission.assignment_submit', course_name=course.name, assignment_name=assignment.name) }}"
+	enctype="multipart/form-data"
+	class="mt-5 p-5 bg-gray-100 rounded gap-5 flex flex-col"
+>
+	{{ form.csrf_token }} {{ form.files(class='input cursor-pointer bg-white') }}
+	<button class="btn btn-outline-primary" type="submit">
+		Submit Assignment
+	</button>
+</form>
+{% endblock %}

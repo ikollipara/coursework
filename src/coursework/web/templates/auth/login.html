@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %} | Login{% endblock %}
+
+{% block content %}
+<section class="flex h-[98dvh]">
+    <img
+	alt="Weller Tower"
+	     src="{{ url_for('static', filename='wellerTower.jpeg') }}"
+	     class="rounded"
+    />
+    <div class="flex flex-col my-auto mx-auto items-center">
+	<h1 class="text-3xl font-light tracking-tight mb-3">Login to Coursework</h1>
+	<form method="post">
+	    {{ form.csrf_token }}
+	    <button class="btn" type="submit">Login with Concordia</button>
+	</form>
+    </div>
+</section>
+{% endblock %}

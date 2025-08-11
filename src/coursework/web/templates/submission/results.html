@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}| Results{% endblock %}
+{% block content %}
+<a
+	href="{{ url_for('submission.course_assignment', course_name=course_name, assignment_name=assignment_name) }}"
+	>Back to Assignment</a
+>
+<h1 class="text-3xl font-light tracking-tight">
+	Results for {{ assignment_name }}
+</h1>
+<style>
+ .r1 {
+     display: none;
+ }
+</style>
+<div class="card mx-5 mt-3">
+  <header>
+    <h2>Short Results</h2>
+  </header>
+  <section>
+      {% for tc_result in result.test_case_results %}
+      <p><span class="font-bold">{{ tc_result.name}}</span>: <span class="{{ 'text-green-500' if tc_result.was_successful else 'text-red-500'}}">{{ 'Passed' if tc_result.was_successful else 'Failed' }}</span></p>
+      {% endfor %}
+  </section>
+  <footer>
+      <p>Total Points: {{ result.earned_points() }}/{{ result.assignment.total_points }}</p>
+  </footer>
+</div>
+<section
+    class="mx-5 mt-3 bg-gray-100 rounded text-wrap text-sm px-3 flex flex-col truncate"
+>
+	{{ output|safe }}
+</section>
+
+{% endblock %}

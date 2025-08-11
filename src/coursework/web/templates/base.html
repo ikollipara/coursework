@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8"/>
+        <title>Coursework{% block title %}{{ title|default("") }}{% endblock %}</title>
+	<link href="{{ url_for('static', filename='output.css') }}" rel="stylesheet"/>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/basecoat-css@0.3.1/dist/basecoat.cdn.min.css">
+	<script src="https://cdn.jsdelivr.net/npm/basecoat-css@0.3.1/dist/js/all.min.js" defer></script>
+    </head>
+    <body class="h-[100dvh]">
+	{% if user and user.is_authenticated %}
+	<aside class="sidebar" data-side="left" aria-hidden="false">
+	    <nav aria-label="Sidebar navigation">
+		<header>Coursework</header>
+		<section class="scrollbar">
+		    <div role="group">
+			<ul>
+			    <li>
+				<a href="{{ url_for('submission.courses') }}">
+				    <span>Courses</span>
+				</a>
+			    </li>
+			</ul>
+		    </div>
+		</section>
+		<footer>
+		    <form method="post" action="{{ url_for('auth.cune_saml_logout') }}">
+			<button class="btn w-full">Logout</span></button>
+		    </form>
+		</footer>
+	    </nav>
+	</aside>
+	{% endif %}
+	<main class="px-2 pt-2">
+	    {% block content %}
+	    {% endblock %}
+	</main>
+    </body>
+</html>

@@ -11,6 +11,7 @@ from dataclasses import field
 from datetime import datetime
 from pathlib import Path
 from pickle import dump
+from pickle import dumps
 from pickle import load
 from pickle import loads
 from typing import BinaryIO
@@ -33,6 +34,7 @@ class _CanBePickled:
     def to_pickle(self, fp: BinaryIO | Path) -> None:
         if isinstance(fp, Path):
             with fp.open("wb+") as f:
+                print(dumps(self))
                 dump(self, f)
         else:
             dump(self, fp)
@@ -96,3 +98,6 @@ class RunnerResult(_CanBePickled):
     course: Configuration.Course
     assignment: Configuration.Assignment
     test_case_results: list[TestCaseResult] = field(default_factory=list)
+
+    def earned_points(self):
+        return sum(tc.points for tc in self.test_case_results if tc.was_successful)

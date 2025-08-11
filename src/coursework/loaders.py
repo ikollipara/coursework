@@ -26,6 +26,7 @@ from typing import NamedTuple
 from typing import overload
 from warnings import warn
 
+import pytz
 from click import ClickException
 from rich.console import Console
 
@@ -90,6 +91,10 @@ class Configuration:
         due_date: datetime
         total_points: int
         test: TestSpec
+
+        def is_late(self, dt=None):
+            dt = dt or datetime.now(pytz.timezone("America/Chicago"))
+            return dt > self.due_date
 
     @overload
     @classmethod
@@ -168,7 +173,9 @@ class Configuration:
                     cls.Assignment(
                         name,
                         description=values.get("description", ""),
-                        due_date=datetime.strptime(values["due_date"], "%Y-%m-%d %H:%M"),
+                        due_date=datetime.strptime(values["due_date"], "%Y-%m-%d %H:%M").astimezone(
+                            pytz.timezone("America/Chicago")
+                        ),
                         total_points=values.get("total_points", 0),
                         test=TestSpec(*values.get("test", " : ").split(":")),
                     )
