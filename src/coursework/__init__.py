@@ -16,4 +16,4 @@ Coursework is a tool for submitting assignments. It includes features for:
 - generating PDF reports
 """
 
-__version__ = "0.0.1"
+__version__ = "0.0.2"

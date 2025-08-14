@@ -24,6 +24,7 @@ def bootstrap_app():
     from coursework.web import submission
 
     login_manager.init_app(app)
+    login_manager.login_view = "auth.cune_saml_login"
 
     @app.context_processor
     def inject_user():
