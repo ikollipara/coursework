@@ -11,19 +11,15 @@ from __future__ import annotations
 import contextlib
 import http
 import typing as t
-from os import environ
 
 import flask
 import flask_login
 import flask_wtf
-import wtforms
 from flask import views
 from onelogin.saml2 import auth
 from onelogin.saml2 import constants
 from onelogin.saml2 import idp_metadata_parser
 from onelogin.saml2 import settings
-from onelogin.saml2 import utils
-from wtforms import validators as fv
 
 from coursework import loaders
 
@@ -38,13 +34,6 @@ bp = flask.Blueprint("auth", __name__, url_prefix="/accounts")
 
 class User(loaders.User, flask_login.UserMixin):
     """This is custom version of the Coursework user that is compatible with Flask Login."""
-
-    @property
-    def is_active(self):
-        config: loaders.Configuration = flask.current_app.config["coursework_config"]
-        for course in config.courses.values():
-            if self.name in course.students:
-                return True
 
     def get_id(self):
         return self.name
@@ -85,7 +74,7 @@ class SAMLMixin:
         return {
             "https": "on" if flask.request.scheme == "https" else "off",
             "http_host": flask.request.host,
-            "script_name": flask.request.path,
+            "script_name": f"{flask.request.root_path}{flask.request.path}",
             "get_data": flask.request.args.copy(),
             "post_data": flask.request.form.copy(),
         }
@@ -167,6 +156,7 @@ class ACSView(SAMLMixin, views.View):
         errors = []
         error_reason = None
         self._configure_auth()
+        print(self._prepare_request())
         with self._request_id():
             try:
                 self._auth.process_response(self._request_id)

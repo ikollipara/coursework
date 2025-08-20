@@ -35,9 +35,7 @@ def bootstrap_app():
         if app.config["DEBUG"]:
             return auth.User(name="ian", role="student")
 
-        user = auth.User(name=user_id, role="student")
-        if user.is_active:
-            return user
+        return auth.User(name=user_id, role="student")
 
     app.register_blueprint(auth.bp)
     app.register_blueprint(submission.bp)
