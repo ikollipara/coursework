@@ -58,6 +58,7 @@ It consists of 3 kinds of blocks:
 - `total_points`: `int` A positive integer representing the total possible points for an assignment.
 - `test`: `str` A 2 part string, separated by ":" that describes the test runner and test script. (Example: `cmd:/home/ian/test_script.sh`). These scripts **must** be written as absolute paths. Accepted runner values are: `cmd` and `py`.
 
+<!---
 ## Deployment Checklist
 
 ```
@@ -78,3 +79,4 @@ sudo chmod u+s /usr/local/bin/coursework
 sudo chmod u+s /usr/local/bin/coursework-admin
 sudo chmod u+s /usr/local/bin/coursework-score
 ```
+--->
